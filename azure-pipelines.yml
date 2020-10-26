@@ -1,0 +1,63 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger: 'none' # we don't publish versions of the entire repository
+
+variables:
+  - group: GitHub
+  - group: Netlify
+
+pr:
+  branches:
+    include:
+      - '*'
+  paths:
+    exclude:
+      - '**/*.md'
+      - '.dependabot/**/*'
+      - '.github/**/*'
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '12.x'
+    displayName: 'Install Node.js'
+
+  - script: yarn
+    displayName: 'Install'
+
+  - script: yarn build
+    displayName: 'Build'
+
+  - script: yarn test:smoke
+    displayName: 'Test'
+
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: |
+        npx netlify-cli deploy \
+          --site '$(NETLIFY_SITE_ID_STORYBOOK)' \
+          --auth '$(NETLIFY_AUTH_TOKEN)' \
+          --message 'PR $(System.PullRequest.PullRequestNumber) $(System.PullRequest.SourceBranch) $(Build.SourceVersionMessage)' \
+          --dir='$(Build.SourcesDirectory)/packages/utilities/storybook/dist' | tee deploy_output
+
+        URL=`grep -Po "(?<=Website Draft URL:) .*" deploy_output`
+        echo "##vso[task.setvariable variable=url]$URL"
+    displayName: 'Deploy to Netlify'
+
+  - task: GitHubComment@0
+    displayName: 'Post Draft Url'
+    condition: eq(variables['IsStorybookChanged'], 'True')
+    inputs:
+      gitHubConnection: 'Hub'
+      repositoryName: '$(Build.Repository.Name)'
+      id: '$(System.PullRequest.PullRequestNumber)'
+      comment: |
+        ## Preview
+        [Draft Storybook Site]($(url))
