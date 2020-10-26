@@ -1,4 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
 import "./storybook.css";
 import "@storybook/addon-console";
 
@@ -19,7 +18,7 @@ addDecorator((storyFn, context) => withConsole()(storyFn)(context));
 // Export global parameters
 export const parameters = {
   viewport: {
-    viewports: {...INITIAL_VIEWPORTS },
+    viewports: INITIAL_VIEWPORTS,
   },
   actions: { argTypesRegex: "^on[A-Z].*" },
 };

@@ -98,6 +98,6 @@
     // "emitDecoratorMetadata": true,         // Enables experimental support for emitting type metadata for decorators.
   },
   "exclude": ["dist", "**/*.test.*", "node_modules"],
-  "include": ["./stories", "./util"],
+  "include": ["./stories", "./util", "stories/antd.storiesstories/reakit.stories.tsxriesstories/bootstrap.stories.tsxries.tsx"],
 
 }
