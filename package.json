@@ -2,7 +2,7 @@
   "name": "storybook-react-ui-examples",
   "version": "1.0.0",
   "description": "This is an example of creating a storybook website stand alone with react-bootstrap or ant design or reakit and typescript",
-  "main": "index.js",
+  "main": "dist/index.html",
   "scripts": {
     "prepublishOnly": "yarn clean && yarn build",
     "test": "exit 0",
