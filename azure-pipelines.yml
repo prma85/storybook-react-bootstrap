@@ -6,7 +6,6 @@
 trigger: 'none' # we don't publish versions of the entire repository
 
 variables:
-  - group: GitHub
   - group: Netlify
 
 pr:
@@ -45,7 +44,7 @@ steps:
           --site '$(NETLIFY_SITE_ID_STORYBOOK)' \
           --auth '$(NETLIFY_AUTH_TOKEN)' \
           --message 'PR $(System.PullRequest.PullRequestNumber) $(System.PullRequest.SourceBranch) $(Build.SourceVersionMessage)' \
-          --dir='$(Build.SourcesDirectory)/packages/utilities/storybook/dist' | tee deploy_output
+          --dir='$(Build.SourcesDirectory)/dist' | tee deploy_output
 
         URL=`grep -Po "(?<=Website Draft URL:) .*" deploy_output`
         echo "##vso[task.setvariable variable=url]$URL"
@@ -53,9 +52,8 @@ steps:
 
   - task: GitHubComment@0
     displayName: 'Post Draft Url'
-    condition: eq(variables['IsStorybookChanged'], 'True')
     inputs:
-      gitHubConnection: 'Hub'
+      gitHubConnection: 'Default'
       repositoryName: '$(Build.Repository.Name)'
       id: '$(System.PullRequest.PullRequestNumber)'
       comment: |
